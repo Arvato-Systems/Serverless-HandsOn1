@@ -1,0 +1,193 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: fr
+    release: demo
+  name: demo-fr-backend
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fr-backend
+      release: demo
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: fr-backend
+        release: demo
+    spec:
+      containers:
+      - env:
+        - name: AZURE_BLOB_ACCOUNT
+          value: acidemopictures
+        - name: DB_PATH
+          value: /app_db/
+        image: rbitia/aci-webserver:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/test
+            port: 8000
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: fr
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api
+            port: 8000
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /app_db
+          name: db-volume
+      volumes:
+      - emptyDir: {}
+        name: db-volume
+---
+  apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: fr
+      release: demo
+    name: demo-fr-frontend
+    namespace: default
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: fr-frontend
+        release: demo
+    template:
+      metadata:
+        labels:
+          app: fr-frontend
+          release: demo
+      spec:
+        containers:
+        - env:
+          - name: IP_JOB_SERVER
+            value: demo-fr-backend:80
+          - name: AZURE_BLOB_ACCOUNT
+            value: acidemopictures
+          image: rbitia/fr-frontend:latest
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: fr
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+---
+  apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: fr
+      release: demo
+    name: demo-fr-ir
+    namespace: default
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: demo-fr-ir
+    template:
+      metadata:
+        labels:
+          app: demo-fr-ir
+      spec:
+        containers:
+        - env:
+          - name: IP_JOB_SERVER
+            value: demo-fr-backend:80
+          - name: SERVER_PATH
+          - name: AZURE_BLOB_ACCOUNT
+            value: acidemopictures
+          - name: PYTHONUNBUFFERED
+            value: "0"
+          image: rbitia/fr-ir:latest
+          imagePullPolicy: Always
+          name: demo-fr-ir
+          volumeMounts:
+          - mountPath: /Pics
+            name: pic-volume
+        volumes:
+        - emptyDir: {}
+          name: pic-volume
+---
+  apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: fr
+      release: demo
+    name: demo-fr-ir-aci
+    namespace: default
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: demo-fr-ir-aci
+    template:
+      metadata:
+        labels:
+          app: demo-fr-ir-aci
+      spec:
+        containers:
+        - env:
+          - name: IP_JOB_SERVER
+            value: <HTTP application routing domain>
+          - name: AZURE_BLOB_ACCOUNT
+            value: acidemopictures
+          - name: PYTHONUNBUFFERED
+            value: "0"
+          image: rbitia/fr-ir:latest
+          imagePullPolicy: Always
+          name: demo-fr-ir-aci
+          resources:
+            requests:
+              cpu: "1"
+              memory: 1500M
+          volumeMounts:
+          - mountPath: /Pics
+            name: pic-volume
+        nodeName: virtual-kubelet-myaciconnector-linux
+        tolerations:
+        - effect: NoSchedule
+          key: azure.com/aci
+        volumes:
+        - emptyDir: {}
+          name: pic-volume

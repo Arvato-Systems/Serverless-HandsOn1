@@ -1,0 +1,83 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: myaciconnector-linux-virtual-kubelet-for-aks
+  name: myaciconnector-linux-virtual-kubelet-for-aks
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: myaciconnector-linux-virtual-kubelet-for-aks
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: myaciconnector-linux-virtual-kubelet-for-aks
+    spec:
+      containers:
+      - args:
+        - --provider
+        - azure
+        - --namespace
+        - default
+        - --nodename
+        - virtual-kubelet-myaciconnector-linux
+        - --os
+        - Linux
+        command:
+        - virtual-kubelet
+        env:
+        - name: VK_TAINT_KEY
+          value: azure.com/aci
+        - name: KUBELET_PORT
+          value: "10250"
+        - name: ACS_CREDENTIAL_LOCATION
+          value: /etc/acs/azure.json
+        - name: AZURE_TENANT_ID
+          value: <Tenant ID>
+        - name: AZURE_SUBSCRIPTION_ID
+          value: <Subscription ID>
+        - name: AZURE_CLIENT_ID
+        - name: AZURE_CLIENT_SECRET
+        - name: ACI_RESOURCE_GROUP
+        - name: ACI_REGION
+          value: westeurope
+        - name: APISERVER_CERT_LOCATION
+          value: /etc/virtual-kubelet/cert.pem
+        - name: APISERVER_KEY_LOCATION
+          value: /etc/virtual-kubelet/key.pem
+        - name: VKUBELET_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        image: microsoft/virtual-kubelet:latest
+        imagePullPolicy: Always
+        name: myaciconnector-linux-virtual-kubelet-for-aks
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/acs/azure.json
+          name: acs-credential
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /etc/kubernetes/azure.json
+          type: File
+        name: acs-credential

@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  labels:
+    app: fr-backend
+    release: demo
+  name: demo-fr-backend
+  namespace: default
+spec:
+  rules:
+  - host: <HTTP application routing domain>
+    http:
+      paths:
+      - backend:
+          serviceName: demo-fr-backend
+          servicePort: 80
+        path: /api
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  labels:
+    app: fr-frontend
+    release: demo
+  name: demo-fr-frontend
+  namespace: default
+spec:
+  rules:
+  - host: <HTTP application routing domain>
+    http:
+      paths:
+      - backend:
+          serviceName: demo-fr-frontend
+          servicePort: 8080
+        path: /

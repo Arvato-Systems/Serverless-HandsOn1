@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: fr
+    release: demo
+  name: demo-fr-backend
+  namespace: default
+spec:
+  ports:
+  - name: backend
+    port: 80
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: fr-backend
+    release: demo
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: fr
+    release: demo
+  name: demo-fr-frontend
+  namespace: default
+spec:
+  ports:
+  - name: frontend
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: fr-frontend
+    release: demo
+  sessionAffinity: None
+  type: ClusterIP
