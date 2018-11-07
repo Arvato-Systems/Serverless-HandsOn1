@@ -1,7 +1,5 @@
 # Burst AKS with ACI Virtual Kubelet 
 
-This demo is based on Ria Bhatia (Microsoft) ACI Demo:   https://github.com/rbitia/aci-demos
-
 #### Table of Contents
 
 * [Prerequiste](#prerequisite)
@@ -18,19 +16,10 @@ This demo is based on Ria Bhatia (Microsoft) ACI Demo:   https://github.com/rbit
 ### Install the Azure CLI
 
 Install `az` by following the instructions for your operating system.
-See the [full installation instructions](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) if yours isn't listed below.
-
-#### MacOS
-```cli
-brew install azure-cli
-```
-
-#### Windows
-https://aka.ms/installazurecliwindows
+See the [full installation instructions](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
 
 ### Install Git
 See the [full instructions](https://docs.microsoft.com/en-us/azure/devops/learn/git/install-and-set-up-git).
-
 
 # Create AKS in Azure Portal
 
@@ -80,7 +69,7 @@ PS H:\azure\Serverless-HandsOn1\k8s> az login
 
 Please remember your Subscritpion ID and your Tenant ID. Field "id" and "tenantId". 
 
-## AKS Credentials & Login
+## AKS Credentials & Dashboard
 
 Install kubectl.exe: 
 ```Powershell
@@ -111,7 +100,7 @@ Or by using kubectl.exe to open the [Dashboard](http://localhost:8001/api/v1/nam
 ```Powershell
 PS H:\azure\Serverless-HandsOn1\k8s> kubectl.exe proxy
 ```
-!!! az aks browse will have a different URL then kubectl.exe
+_`az aks browse` and `kubectl.exe` will have a different Dashboard URL's_
 
 Kubernetes Dashboard:
 
@@ -268,7 +257,8 @@ If the ACI conatainer arn't created there mind be an issue with the connector, j
 ```
 PS H:\azure\Serverless-HandsOn1\k8s> kubectl delete pod -l app=myaciconnector-linux-virtual-kubelet-for-aksal-kubelet-for-aks
 ```
-No wories, it will be recreated.
+No worries, it will be recreated.
 
 # Credits
+This demo is based on Ria Bhatia (Microsoft) ACI Demo:
 Ria Bhatia (Microsoft) https://github.com/rbitia/aci-demos
