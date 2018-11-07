@@ -57,7 +57,7 @@ PS H:\azure\Serverless-HandsOn1\k8s> az login
   "cloudName": "AzureCloud",
   "id": "******-****-******-*****",
   "isDefault": false,
-  "name": "Microsoft Azure Enterprise",
+  "name": "Azure Bootcamp 09.11.2018",
   "state": "Enabled",
   "tenantId": "******-****-******-*****",
   "user": {
@@ -73,11 +73,11 @@ PS H:\azure\Serverless-HandsOn1\k8s> az account list --output table
 Name                            CloudName    SubscriptionId                        State    IsDefault
 ------------------------------  -----------  ------------------------------------  -------  -----------
 ...
-Microsoft Azure Enterprise      AzureCloud   ******-****-******-*****  Enabled  False
+Azure Bootcamp 09.11.2018      AzureCloud   ******-****-******-*****  Enabled  False
 ...
 ```
 ```
-PS H:\azure\Serverless-HandsOn1\k8s> az account set --subscription "Microsoft Azure Enterprise"
+PS H:\azure\Serverless-HandsOn1\k8s> az account set --subscription "Azure Bootcamp 09.11.2018"
 ```
 
 Please remember the Subscritpion ID and Tenant ID. Field "id" and "tenantId". 
@@ -214,7 +214,7 @@ PS H:\azure\Serverless-HandsOn1\k8s> az account show
   "cloudName": "AzureCloud",
   "id": "******-****-******-*****",
   "isDefault": false,
-  "name": "Microsoft Azure Enterprise",
+  "name": "Azure Bootcamp 09.11.2018",
   "state": "Enabled",
   "tenantId": "******-****-******-*****",
   "user": {
