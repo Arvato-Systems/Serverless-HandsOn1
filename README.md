@@ -205,7 +205,7 @@ Great! You deployed a scalebale, resillient application with frontend, backend, 
 Instead of just scaling the number of worker pods in our Kubernetes we are going serverless. 
 
 ### Add your Subscription and Tenant ID
-Edit aci_connector.yaml and replace `<Subscription Id>` and <Tenanted Id> with your "id" and "TenantId" (don't forget the ").
+Edit aci_connector.yaml and replace `<Subscription Id>` and <Tenanted Id> with  "id" and "TenantId"
 In case your forgot to write down the id's, you can show them again with:
 
 ```Powershell
@@ -257,12 +257,21 @@ Thanks!
 
 ## Troubleshoot
 
-### ACI Containers won't created
+### ACI containers won't created
 If the ACI conatainers aren't created there might be an issue with the connector. Just restart it with:
 ```
-PS H:\azure\Serverless-HandsOn1\k8s> kubectl delete pod -l app=myaciconnector-linux-virtual-kubelet-for-aksal-kubelet-for-aks
+PS H:\azure\Serverless-HandsOn1\k8s> kubectl delete --namespace default pod -l app=myaciconnector-linux-virtual-kubelet-for-aks
 ```
 No worries, it will be recreated.
+
+### DNS entries won't created
+If the external dns routing has some problems, restart it:
+```
+PS H:\azure\Serverless-HandsOn1\k8s> kubectl delete --namespace kube-system pod -l app=addon-http-application-routing-external-dns
+```
+No worries, it will be recreated.
+
+
 
 ### Enable ACI in your Subscription
 If Azure Container Instances aren't already activated in your subscription please activate it now:
