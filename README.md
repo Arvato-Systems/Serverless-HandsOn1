@@ -53,12 +53,12 @@ Login to your Azure Subscription:
 ```Powershell
 PS H:\azure\Serverless-HandsOn1\k8s> az login
 {
-  "environmentName": "AzureCloud",
-  "id": "************",
-  "isDefault": true,
-  "name": "Visual Studio Premium mit MSDN",
+  "cloudName": "AzureCloud",
+  "id": "******-****-******-*****",
+  "isDefault": false,
+  "name": "Microsoft Azure Enterprise",
   "state": "Enabled",
-  "tenantId":"************",
+  "tenantId": "******-****-******-*****",
   "user": {
     "name": "***@***.**",
     "type": "user"
@@ -66,8 +66,20 @@ PS H:\azure\Serverless-HandsOn1\k8s> az login
 }
 ...
 ```
+Switch to the Session Azure Subscription:
+```
+PS H:\azure\Serverless-HandsOn1\k8s> az account list --output table
+Name                            CloudName    SubscriptionId                        State    IsDefault
+------------------------------  -----------  ------------------------------------  -------  -----------
+...
+Microsoft Azure Enterprise      AzureCloud   ******-****-******-*****  Enabled  False
+...
+```
+```
+PS H:\azure\Serverless-HandsOn1\k8s> az account set --subscription "Microsoft Azure Enterprise"
+```
 
-Please remember your Subscritpion ID and your Tenant ID. Field "id" and "tenantId". 
+Please remember the Subscritpion ID and Tenant ID. Field "id" and "tenantId". 
 
 ## AKS Credentials & Dashboard
 
@@ -108,7 +120,7 @@ Kubernetes Dashboard:
 
 # Deploy the application
 
-Girst get HTTP application routing domain from Azure Portal.
+First, get HTTP application routing domain from Azure Portal.
 
 ![HTTP](images/http.gif)
 
@@ -149,7 +161,7 @@ demo-fr-backend    ClusterIP   10.0.30.239    <none>        80/TCP     51s
 demo-fr-frontend   ClusterIP   10.0.105.161   <none>        8080/TCP   51s
 kubernetes         ClusterIP   10.0.0.1       <none>        443/TCP    1h
 ```
-This will expose your frontend and backend internaly using a cluster ip.
+This will expose your frontend and backend internally using a cluster ip.
 
 ## Create the ingress
 Edit ingress.yaml (Line 14 and 35) and replace `<HTTP application routing domain>` with  your `demo.<random string>.westeurope.aksapp.io`.
@@ -163,7 +175,7 @@ NAME               HOSTS                                            ADDRESS     
 demo-fr-backend    demo.6de59834c15749e6a0fa.westeurope.aksapp.io   13.93.78.133   80        1m
 demo-fr-frontend   demo.6de59834c15749e6a0fa.westeurope.aksapp.io   13.93.78.133   80        1m
 ```
-This will expose our frontend and backend endpoint externaly.
+This will expose our frontend and backend endpoint externally.
 
 !!! Before going on check if the DNS record has been made:
 
@@ -176,23 +188,23 @@ Compatibility: PublishInternal:false Provider:azure GoogleProject: DomainFilter:
 time="2018-11-06T09:30:38Z" level=info msg="Updating A record named 'demo' to '13.93.78.133' for Azure DNS zone '6de59834c15749e6a0fa.westeurope.aksapp.io'."
 time="2018-11-06T09:30:39Z" level=info msg="Updating TXT record named 'demo' to '"heritage=external-dns,external-dns/owner=default"' for Azure DNS zone '6de59834c15749e6a0fa.westeurope.aksapp.io'."
 ```
-Wait unit you got the `Updating A record named ....`. Now everything is ready to access your application:
+Wait until you got the `Updating A record named ....`. Now everything is ready to access your application:
 
 Open `demo.<random string>.westeurope.aksapp.io` in your browser:
 
 ![App](images/app.png)
 
-What expected to see is that images will be sorted regarding if they have a face on it or not.
+What you are expected to see is that images will be sorted regarding if they have a face on it or not.
 You'll see a chart showing the number of processed images per second.
 
 Great! You deployed a scalebale, resillient application with frontend, backend, worker, routing, dns...! Just using the yaml Files. Now lets start to scale ;-)
 
 # Burst AKS with ACI
 
-Instead of just scale the number of worker pods in our Kubernetes we are going serverless. 
+Instead of just scaling the number of worker pods in our Kubernetes we are going serverless. 
 
 ### Enable ACI in your Subscription
-If Azure Container Instances arn't already activated in your subscription please activate it now:
+If Azure Container Instances aren't already activated in your subscription please activate it now:
 
 ```Powershell
 PS H:\azure\Serverless-HandsOn1\k8s> az provider register -n Microsoft.ContainerInstance
@@ -200,17 +212,17 @@ PS H:\azure\Serverless-HandsOn1\k8s> az provider register -n Microsoft.Container
 
 ### Add your Subscription and Tenant ID
 Edit aci_connector.yaml and replace `<Subscription Id>` and <Tenanted Id> with your "id" and "TenantId" (don't forget the ").
-In case your forgot to write down the id's, you can show again with:
+In case your forgot to write down the id's, you can show them again with:
 
 ```Powershell
 PS H:\azure\Serverless-HandsOn1\k8s> az account show 
 {
-  "environmentName": "AzureCloud",
-  "id": "****this is the subscription id********",
-  "isDefault": true,
-  "name": "Visual Studio Premium mit MSDN",
+  "cloudName": "AzureCloud",
+  "id": "******-****-******-*****",
+  "isDefault": false,
+  "name": "Microsoft Azure Enterprise",
   "state": "Enabled",
-  "tenantId":"******this is the tenantid******",
+  "tenantId": "******-****-******-*****",
   "user": {
     "name": "***@***.**",
     "type": "user"
@@ -238,26 +250,35 @@ And goining to the Dashboard you can see the capability the new node is announce
 ![Node](images/node.png)
 
 ### Scale UP the ACI Worker
-Time to scale our worker up by setting the number of replicats to 10:
+Time to scale our worker up by setting the number of replicas to 10:
 
 ```
 PS H:\azure\Serverless-HandsOn1\k8s> kubectl scale deploy demo-fr-ir-aci --replicas 10
 ```
 
 # Watch the result in the application
-Now the pods will spin up in ACI. This may take 1-2min to create the pods. Afterwards you should see the result in the app:
-
-![Node](images/app.png)
-
+Now the pods will spin up in ACI. This may take 1-2min to create the pods. Afterwards you should see the result in the app.
 
 Thanks!
 
 ## Troubleshoot
-If the ACI conatainer arn't created there mind be an issue with the connector, just restart it with:
+
+### ACI Containers won't created
+If the ACI conatainers aren't created there might be an issue with the connector. Just restart it with:
 ```
 PS H:\azure\Serverless-HandsOn1\k8s> kubectl delete pod -l app=myaciconnector-linux-virtual-kubelet-for-aksal-kubelet-for-aks
 ```
 No worries, it will be recreated.
+
+### Enable ContainerService in your Subscription
+![error](images/containerservice.png)
+
+If AKS will not be created:
+
+```Powershell
+PS H:\azure\Serverless-HandsOn1\k8s> az provider register -n Microsoft.ContainerService
+```
+
 
 # Credits
 This demo is based on Ria Bhatia (Microsoft) ACI Demo:
