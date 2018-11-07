@@ -28,13 +28,14 @@ See the [full instructions](https://docs.microsoft.com/en-us/azure/devops/learn/
 1. Login into Azure Portal.
 2. Create new Ressources.
 3. Select Kubernetes Service.
-4. Select your Ressourcegroup (provided in the session).
-5. Enter a name, i.e. aks.
-6. Enter a DNS prefix, i.e. azure.
-7. Continue to Authentification (make sure RBAC is deactivated).
-8. Continue to Network and activate HTTP Application Routing.
-9. Continue to Monitoring
-10. Create AKS
+4. Select the subscription.
+5. Select your Ressourcegroup (gruppe## provided in the session).
+6. Enter a name, i.e. aks.
+7. Enter a DNS prefix, i.e. azure.
+8. Continue to Authentification (make sure RBAC is deactivated).
+9. Continue to Network and activate HTTP Application Routing.
+10. Continue to Monitoring and deactivate Monitoring.
+11. Create AKS
 
 Sometimes there is a problem during the precheck (caused by the service principal isn't created as fast as expected). Just go one step back and click create again. This time it should work.
 
@@ -203,13 +204,6 @@ Great! You deployed a scalebale, resillient application with frontend, backend, 
 
 Instead of just scaling the number of worker pods in our Kubernetes we are going serverless. 
 
-### Enable ACI in your Subscription
-If Azure Container Instances aren't already activated in your subscription please activate it now:
-
-```Powershell
-PS H:\azure\Serverless-HandsOn1\k8s> az provider register -n Microsoft.ContainerInstance
-```
-
 ### Add your Subscription and Tenant ID
 Edit aci_connector.yaml and replace `<Subscription Id>` and <Tenanted Id> with your "id" and "TenantId" (don't forget the ").
 In case your forgot to write down the id's, you can show them again with:
@@ -270,6 +264,13 @@ PS H:\azure\Serverless-HandsOn1\k8s> kubectl delete pod -l app=myaciconnector-li
 ```
 No worries, it will be recreated.
 
+### Enable ACI in your Subscription
+If Azure Container Instances aren't already activated in your subscription please activate it now:
+
+```Powershell
+PS H:\azure\Serverless-HandsOn1\k8s> az provider register -n Microsoft.ContainerInstance
+```
+
 ### Enable ContainerService in your Subscription
 ![error](images/containerservice.png)
 
@@ -278,6 +279,11 @@ If AKS will not be created:
 ```Powershell
 PS H:\azure\Serverless-HandsOn1\k8s> az provider register -n Microsoft.ContainerService
 ```
+
+### AKS Validation failed
+Sometimes there is a problem during the precheck (caused by the service principal isn't created as fast as expected). Just go one step back and click create again. This time it should work.
+
+![create](images/create.gif)
 
 
 # Credits
