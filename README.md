@@ -191,11 +191,15 @@ time="2018-11-06T09:30:39Z" level=info msg="Updating TXT record named 'demo' to 
 ```
 Wait until you got the `Updating A record named ....`. Now everything is ready to access your application:
 
+## Facial Recognition App
+
 Open `demo.<random string>.westeurope.aksapp.io` in your browser:
 
 ![App](images/app.png)
 
 What you are expected to see is that images will be sorted regarding if they have a face on it or not.
+
+Yes, it's a facial recognition app, taking images from a blob storage, trying to recognition faces and sort the images regardingly.
 You'll see a chart showing the number of processed images per second.
 
 Great! You deployed a scalebale, resillient application with frontend, backend, worker, routing, dns...! Just using the yaml Files. Now lets start to scale ;-)
@@ -255,7 +259,30 @@ Now the pods will spin up in ACI. This may take 1-2min to create the pods. After
 
 Thanks!
 
-## Troubleshoot
+# Troubleshoot
+
+### `kubectl` won't find the .kube/config File
+In the case kubectl can't find the config file, pleas check the path where `az aks get-credentials` has stored the files:
+
+```
+PS H:\azure\Serverless-HandsOn1\k8s> az aks get-credentials --resource-group Kubernetes --name IoxAzureKubernetes
+Merged "<aks name>" as current context in C:\Users\<user>\.kube\config
+```
+
+Set enviroment variable $HOME or $KUBECONFIG to this path. The Kubectl documentation: 
+```
+The loading order follows these rules:
+
+  1. If the --kubeconfig flag is set, then only that file is loaded.  The flag may only be set once and no merging takes
+place.
+  2. If $KUBECONFIG environment variable is set, then it is used a list of paths (normal path delimitting rules for your
+system).  These paths are merged.  When a value is modified, it is modified in the file that defines the stanza.  When a
+value is created, it is created in the first file that exists.  If no files in the chain exist, then it creates the last
+file in the list.
+  3. Otherwise, ${HOME}/.kube/config is used and no merging takes place.
+```
+
+
 
 ### ACI containers won't created
 If the ACI conatainers aren't created there might be an issue with the connector. Just restart it with:
